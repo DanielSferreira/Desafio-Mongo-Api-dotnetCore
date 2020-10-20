@@ -5,5 +5,9 @@
     <RootNamespace>Desafio_Mongo_Api_dotnetCore</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.11.3" />
+  </ItemGroup>
+
 
 </Project>
