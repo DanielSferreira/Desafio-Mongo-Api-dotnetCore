@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
+using Models;
 
 namespace Data
 {
@@ -34,6 +35,7 @@ namespace Data
 
             if (!BsonClassMap.IsClassMapRegistered(typeof(Lugares)))
             {
+                Console.WriteLine("Aqui");
                 BsonClassMap.RegisterClassMap<Lugares>(i =>
                 {
                     i.AutoMap();

@@ -7,6 +7,6 @@ namespace Models
         public string Lugar {get; set;}
         public string Descricao {get; set;}
         public int status {get; set;}
-        public List<string> PontosTuristicos {get; set;}
+        public string[] PontosTuristicos {get; set;}
     }
 }

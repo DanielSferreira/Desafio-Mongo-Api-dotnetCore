@@ -9,6 +9,7 @@ namespace Desafio_Mongo_Api_dotnetCore
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -20,6 +21,19 @@ namespace Desafio_Mongo_Api_dotnetCore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<MongoDb>();
+
+            services.AddCors(options =>
+                {
+                    options.AddPolicy(name: MyAllowSpecificOrigins,
+                                        builder =>
+                                        {
+                                            builder.WithOrigins("http://localhost:4200/",
+                                                                "http://192.168.1.4:4200/")
+                                                                .AllowAnyHeader()
+                                                                .AllowAnyMethod();;
+                                        });
+                });
+
             services.AddControllers();
         }
 
@@ -34,6 +48,8 @@ namespace Desafio_Mongo_Api_dotnetCore
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 

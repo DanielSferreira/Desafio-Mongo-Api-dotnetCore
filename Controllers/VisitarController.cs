@@ -3,7 +3,9 @@ using Models;
 using Data;
 using MongoDB.Driver;
 using Data.Collections;
-//using static System.Console;
+using System.Threading.Tasks;
+using static System.Console;
+
 namespace Controllers
 {
     [ApiController]
@@ -13,21 +15,29 @@ namespace Controllers
 
         private MongoDb _mongoDb;
         IMongoCollection<Lugares> _lugaresC;
-        
+
         public VisitarController(MongoDb mDb)
         {
             _mongoDb = mDb;
             _lugaresC = _mongoDb.DB.GetCollection<Lugares>("lugares");
         }
         [HttpPost("salvarLugar")]
-        public ActionResult SalvarLugar([FromBody] VisitarModel visitForm)
-        {
-            var l = new Lugares(visitForm);
-            _lugaresC.InsertOne(l);
-            return StatusCode(201,visitForm.Lugar+" Inserido com successo");
+        public async Task<ActionResult> SalvarLugar([FromBody] VisitarModel visitForm)
+        { 
+            var a = new Lugares(visitForm);
+            try
+            {
+                await _lugaresC.InsertOneAsync(a);
+            }
+            catch (System.Exception)
+            {
+                return StatusCode(501, "Problemas na inserção de dados");
+                throw;
+            }
+            return StatusCode(201, a.Lugar + " Inserido com successo");
         }
 
-        [HttpGet]
+        [HttpGet("listar")]
         public ActionResult PegaLugares()
         {
             var infectados = _lugaresC.Find(Builders<Lugares>.Filter.Empty).ToList();
