@@ -30,7 +30,8 @@ namespace Desafio_Mongo_Api_dotnetCore
                                             builder.WithOrigins("http://localhost:4200/",
                                                                 "http://192.168.1.4:4200/")
                                                                 .AllowAnyHeader()
-                                                                .AllowAnyMethod();;
+                                                                .AllowCredentials()
+                                                                .AllowAnyMethod();
                                         });
                 });
 
@@ -40,6 +41,10 @@ namespace Desafio_Mongo_Api_dotnetCore
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(option => option.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
+                
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -49,7 +54,6 @@ namespace Desafio_Mongo_Api_dotnetCore
 
             app.UseRouting();
 
-            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 

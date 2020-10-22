@@ -9,7 +9,7 @@ using static System.Console;
 namespace Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class VisitarController : ControllerBase
     {
 
@@ -41,6 +41,13 @@ namespace Controllers
         public ActionResult PegaLugares()
         {
             var infectados = _lugaresC.Find(Builders<Lugares>.Filter.Empty).ToList();
+            return Ok(infectados);
+        }
+
+        [HttpGet("listar/{str}")]
+        public ActionResult PegaLugaresByLugar(string str)
+        {
+            var infectados = _lugaresC.Find(Builders<Lugares>.Filter.Where(e => e.Lugar == str)).First();
             return Ok(infectados);
         }
     }
