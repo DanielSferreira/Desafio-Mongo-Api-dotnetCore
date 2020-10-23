@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Data.Collections
 {
@@ -26,6 +29,10 @@ namespace Data.Collections
         }
         public Lugares()
             { }
+
+        [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string _id { get; set; }
 
         public string Lugar { get; set; }
         public string Descricao { get; set; }
