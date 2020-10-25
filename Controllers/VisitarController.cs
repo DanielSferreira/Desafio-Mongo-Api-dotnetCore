@@ -22,7 +22,7 @@ namespace Controllers
             _lugaresC = _mongoDb.DB.GetCollection<Lugares>("lugares");
         }
         [HttpPost("salvarLugar")]
-        public async Task<ActionResult> SalvarLugar([FromBody] VisitarModel visitForm)
+        public async Task<ActionResult<Lugares>> SalvarLugar([FromBody] VisitarModel visitForm)
         {
             var a = new Lugares(visitForm);
             try
@@ -31,42 +31,78 @@ namespace Controllers
             }
             catch (System.Exception)
             {
-                return StatusCode(501, "Problemas na inserção de dados");
+                return BadRequest();
                 throw;
             }
-            return StatusCode(201, a.Lugar + " Inserido com successo");
+            return Ok(a);
         }
 
         [HttpGet("listar")]
         public ActionResult PegaLugares()
         {
-            var infectados = _lugaresC.Find(Builders<Lugares>.Filter.Empty).ToList();
-            return Ok(infectados);
+            try
+            {
+                var listaLugares = _lugaresC.Find(Builders<Lugares>.Filter.Empty).ToList();
+                return Ok(listaLugares);
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+                throw;
+            }
         }
 
-        [HttpGet("listar/{str}")]
-        public ActionResult PegaLugaresByLugar(string str)
+        [HttpGet("listar/{id}")]
+        public ActionResult PegaLugaresByLugar(string id)
         {
-            var infectados = _lugaresC.Find(Builders<Lugares>.Filter.Where(e => e.Lugar == str)).First();
-            return Ok(infectados);
+            try
+            {
+                var getLugar = _lugaresC.Find(Builders<Lugares>.Filter.Where(e => e._id == id)).First();
+                return Ok(getLugar);
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+                throw;
+            }
         }
 
         [HttpPut("atualizar")]
-        public async Task<ActionResult> atualizarUm([FromBody] VisitarModel visitForm)
+        public async Task<ActionResult<Lugares>> atualizarUm([FromBody] VisitarModel visitForm)
         {
-            var a = new Lugares(visitForm);
-            var filter = Builders<Lugares>.Filter.Eq("_id", a.Lugar);
-            var update = Builders<Lugares>.Update.Set("_id", a.Lugar);
+            var atualizado = new Lugares(visitForm);
+            var findi = _lugaresC.Find(Builders<Lugares>.Filter.Where(e => e._id == visitForm._id)).First();
+            var filter = Builders<Lugares>.Filter.Eq("_id", findi._id);
+            var update = Builders<Lugares>
+                .Update
+                    .Set("lugar", atualizado.Lugar)
+                    .Set("descricao", atualizado.Descricao)
+                    .Set("status", atualizado.status)
+                    .Set("pontosTuristicos", atualizado.PontosTuristicos);
             try
             {
                 await _lugaresC.UpdateOneAsync(filter, update);
             }
-            catch (System.Exception)
+            catch (System.Exception e)
             {
-                return StatusCode(501, "Problemas na inserção de dados");
+                return BadRequest(e.Message);
                 throw;
             }
-             return StatusCode(203, a.Lugar + " Alterado com successo");
+            return Ok(atualizado);
+        }
+        [HttpDelete("delete/{id}")]
+        public async Task<ActionResult> DeleteById(string id)
+        {
+            try
+            {
+                var e = await _lugaresC.DeleteOneAsync(Builders<Lugares>.Filter.Where(e => e._id == id));
+                return Ok();
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest(e);
+                throw;
+            }
         }
     }
 }
